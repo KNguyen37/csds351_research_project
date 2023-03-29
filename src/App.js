@@ -1,25 +1,62 @@
-import logo from './logo.svg';
+import axios from "axios";
+import * as React from 'react';
+import { useState } from 'react';
+import { Grid } from '@mui/material';
+import InputForm from './components/InputForm.js';
+import Results from './components/Results.js';
 import './App.css';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+
+  const [inputForm, setInputForm] = useState(true);
+  const [results, setResults] = useState(false);
+
+  function getData() {
+    // axios({
+    //     method: "POST",
+    //     url: "/search",
+    //   })
+    //   .then((response) => {
+        setResults(true)
+        setInputForm(false)
+      // })
+    }
+
+    function reset() {
+      // axios({
+      //     method: "GET",
+      //     url: "/",
+      //   })
+      //   .then((response) => {
+          setInputForm(true)
+          setResults(false)
+        // })
+      }
+
+  return ( 
+
+      <div>
+        <Grid
+          container
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          style={{ minHeight: '100vh' }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+          <Grid item md={6}>
+            {inputForm && (
+            <InputForm 
+              postFunction={getData}
+            />
+            )}
+            {results && (
+            <Results resultsFunction={reset}/>
+            )}
+          </Grid>   
+        </Grid>  
+      </div>
+);
 }
 
 export default App;
