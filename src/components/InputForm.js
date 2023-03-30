@@ -1,19 +1,19 @@
   import * as React from 'react';
-  import { Container, FormControl, InputLabel, Input, Button } from '@mui/material';
+  import { Container, FormControl, InputLabel, TextField, Button } from '@mui/material';
   
   function InputForm(props) {
   
     
     return ( 
-      <div>
-          <Container>
-            <FormControl>
-              <InputLabel htmlFor="location">Enter a Restaurant You Enjoy</InputLabel>
-              <Input id="location" aria-describedby="Enjoyed Restaurant" />
+            <FormControl sx={{ width: '50%' }}>
+              <TextField
+                id="outlined-multiline-static"
+                label="What kind of restaurant would you like to eat at?"
+                multiline
+                rows={4}
+              />
               <Button variant="contained" onClick={props.postFunction}>Get Recommendations</Button>
             </FormControl>
-          </Container>
-      </div>
   );
   }
   

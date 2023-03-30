@@ -42,9 +42,8 @@ function App() {
           direction="column"
           alignItems="center"
           justifyContent="center"
-          style={{ minHeight: '100vh' }}
+          style={{ minHeight: '100vh'}}
         >
-          <Grid item md={6}>
             {inputForm && (
             <InputForm 
               postFunction={getData}
@@ -52,8 +51,7 @@ function App() {
             )}
             {results && (
             <Results resultsFunction={reset}/>
-            )}
-          </Grid>   
+            )}  
         </Grid>  
       </div>
 );
