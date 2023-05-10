@@ -10,27 +10,35 @@ function App() {
 
   const [inputForm, setInputForm] = useState(true);
   const [results, setResults] = useState(false);
+  const [model_results, setModelResults] = useState(null)
 
-  function getData() {
-    // axios({
-    //     method: "POST",
-    //     url: "/search",
-    //   })
-    //   .then((response) => {
+  function getData(body) {
+    axios({
+        method: "POST",
+        url: "/search",
+        data: {
+          words: body
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then((response) => {
         setResults(true)
         setInputForm(false)
-      // })
+        setModelResults(response.data.results)
+      })
     }
 
     function reset() {
-      // axios({
-      //     method: "GET",
-      //     url: "/",
-      //   })
-      //   .then((response) => {
+      axios({
+          method: "GET",
+          url: "/",
+        })
+        .then((response) => {
           setInputForm(true)
           setResults(false)
-        // })
+        })
       }
 
   return ( 
@@ -50,7 +58,7 @@ function App() {
             />
             )}
             {results && (
-            <Results resultsFunction={reset}/>
+            <Results resultsFunction={reset} results={model_results}/>
             )}  
         </Grid>  
       </div>
