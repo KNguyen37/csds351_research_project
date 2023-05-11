@@ -31,15 +31,9 @@ function App() {
     }
 
     function reset() {
-      axios({
-          method: "GET",
-          url: "/",
-        })
-        .then((response) => {
-          setInputForm(true)
-          setResults(false)
-        })
-      }
+      setInputForm(true)
+      setResults(false)
+    }
 
   return ( 
 

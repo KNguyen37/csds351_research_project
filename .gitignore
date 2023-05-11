@@ -24,4 +24,3 @@ yarn-error.log*
 
 backend/env
 backend/__pycache__
-backend/yelp_recommendation_model_8.pkl

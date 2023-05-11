@@ -6,17 +6,12 @@ import nltk
 import string
 import numpy as np
 import json
+import requests
 
 nltk.download('stopwords')
 
 # Load ML model
 P, Q, userid_vectorizer = pickle.load(open("yelp_recommendation_model_8.pkl", "rb"))
-
-# Import sample database
-business = pd.read_csv("business_sample.csv")
-df1 = business[(business['state'] == "CA") & (business['city'] == 'Santa Barbara')]
-df2 = df1.reset_index(drop = True)
-business_CA = df2.drop(columns = 'Unnamed: 0')
 
 # Setup text processing
 stop = []
@@ -26,16 +21,21 @@ for word in stopwords.words('english'):
 
 api = Flask(__name__)
 
+api_key = "h56sDBVwv3kSJVYzUovbaR-uejvYqdorJL-wvrhJHCytcl0tCw3DDZtIBHLUScuXjZGNSmIs6VV9l96Gr1huG05MOrjSDj5N20UVRx8PQHHa4AjMyKNV0KKYLuTfY3Yx"
+
 # Class to represent a restaurant
 class Restaurant:
-    def __init__(self, id, name, categories, stars):
+    def __init__(self, id, name, categories, stars, reviews, image, url):
         self.id = id
         self.name = name
-        self.categories = categories
+        self.categories = [x['title'] + ", " for x in categories]
         self.stars = stars
+        self.reviews = reviews
+        self.image = image
+        self.url = url
     
     def to_dict(self):
-        return {"id": self.id, "name": self.name, "categories": self.categories, "stars": self.stars}
+        return {"id": self.id, "name": self.name, "categories": self.categories, "stars": self.stars, "reviews": self.reviews, "image": self.image, "url": self.url}
 
 # Processes inputted text for the ML model
 def text_process(mess):
@@ -46,11 +46,17 @@ def text_process(mess):
 # Creates a list of restaurants from a dataframe
 def build_results(df):
     restaurants = []
-    for i in df.index:
-        restaurants.append(Restaurant(business_CA[business_CA['business_id']==i]['business_id'].iloc[0],
-                                      business_CA[business_CA['business_id']==i]['name'].iloc[0],
-                                      business_CA[business_CA['business_id']==i]['categories'].iloc[0],
-                                      str(business_CA[business_CA['business_id']==i]['stars'].iloc[0])+ ' '+str(business_CA[business_CA['business_id']==i]['review_count'].iloc[0])
+    headers = {"accept": "application/json", "Authorization": "Bearer {}".format(api_key)}
+    for id in df.index:
+        url = "https://api.yelp.com/v3/businesses/" + id
+        response = requests.get(url, headers=headers).json()
+        restaurants.append(Restaurant(response['id'],
+                                      response['name'],
+                                      response['categories'],
+                                      str(response['rating']),
+                                      str(response['review_count']),
+                                      response['image_url'],
+                                      response['url']
                                      ))
     return restaurants
 
@@ -62,5 +68,5 @@ def generate_recommendations():
     test_vectors = userid_vectorizer.transform(test_df['text'])
     test_v_df = pd.DataFrame(test_vectors.toarray(), index=test_df.index, columns=userid_vectorizer.get_feature_names_out())
     predictItemRating=pd.DataFrame(np.dot(test_v_df.loc[0],Q.T),index=Q.index,columns=['Rating'])
-    topRecommendations=pd.DataFrame.sort_values(predictItemRating,['Rating'],ascending=[0])[:7]
+    topRecommendations=pd.DataFrame.sort_values(predictItemRating,['Rating'],ascending=[0])[:5]
     return json.dumps({"results": [obj.to_dict() for obj in build_results(topRecommendations)]})
