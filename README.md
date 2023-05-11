@@ -8,9 +8,6 @@ Should be run in the ./backend directory
 ### `npm install`
 Should be run in the root directory
 
-### Machine Learning Model
-The ML model is too large to be comitted to the GitHub repository, it will have to be downloaded from elsewhere and placed in the `backend/yelp_recommendation_model_8.pkl` path
-
 ## Running the Project
 
 There are 2 commands needed to run both the frontend and backend
